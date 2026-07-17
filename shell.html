@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f6f2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="today">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
+  <title>today</title>
+  <style>
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#f7f6f2}
+    iframe{display:block;width:100%;height:100dvh;border:0;background:#f7f6f2}
+  </style>
+</head>
+<body>
+  <iframe id="today-frame" title="today task tracker"></iframe>
+  <script>
+    (()=>{
+      localStorage.setItem('today.welcome.v1','seen');
+      const frame=document.querySelector('#today-frame');
+      frame.addEventListener('load',()=>{
+        const doc=frame.contentDocument;
+        if(!doc)return;
+
+        const style=doc.createElement('style');
+        style.textContent=`
+          .hero{padding-top:25px!important}
+          [data-screen="all"] .hero{padding-top:25px!important}
+        `;
+        doc.head.appendChild(style);
+
+        const completionPhrases=[
+          'на сегодня достаточно. правда.',
+          'готово. теперь можно не спешить.',
+          'список закончился. день продолжается.',
+          'всё сделано. оставь немного воздуха.',
+          'задачи закончились. ты всё ещё здесь.',
+          'сегодня получилось. этого достаточно.',
+          'готово. мир не рухнул, можно отдохнуть.',
+          'все пункты закрыты. красиво.',
+          'на сегодня точка. без чувства вины.',
+          'дела завершены. вернись к себе.',
+          'всё на месте. можно отпустить день.',
+          'готово. дальше только необязательная жизнь.',
+          'план выполнен. тишина тоже считается.',
+          'всё сделано. теперь ничего не доказывай.',
+          'день собран. можно немного исчезнуть.',
+          'готово. оставшееся время принадлежит тебе.',
+          'все задачи закрыты. неплохой сюжет.',
+          'на сегодня хватит. это не капитуляция.',
+          'список пуст. голова тоже может отдохнуть.',
+          'готово. остальное спокойно подождёт.'
+        ];
+
+        const updateCompletionCopy=()=>{
+          const summary=doc.querySelector('#summary');
+          if(!summary)return;
+          if(summary.textContent.trim().toLowerCase()==='всё готово. можно выдохнуть.'){
+            summary.textContent=completionPhrases[Math.floor(Math.random()*completionPhrases.length)];
+          }
+        };
+
+        updateCompletionCopy();
+        const summary=doc.querySelector('#summary');
+        if(summary){
+          new MutationObserver(updateCompletionCopy).observe(summary,{childList:true,characterData:true,subtree:true});
+        }
+      });
+      frame.src='./app.html';
+    })();
+  </script>
+</body>
+</html>

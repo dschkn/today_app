@@ -8,114 +8,71 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="today">
   <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
   <title>today</title>
   <style>
-    :root {
-      --background: #f7f6f2;
-      --text: #111111;
-      --muted: #aaa8a2;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
-      color: var(--text);
-      background: var(--background);
-    }
-    html[data-theme="dark"] {
-      --background: #090909;
-      --text: #f4f4f0;
-      --muted: #777773;
-      color-scheme: dark;
-    }
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background: var(--background);
-      color: var(--text);
-    }
-    body {
-      min-height: 100svh;
-      padding: calc(env(safe-area-inset-top) + 28px) 30px calc(env(safe-area-inset-bottom) + 28px);
-      display: flex;
-      flex-direction: column;
-      -webkit-font-smoothing: antialiased;
-      -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
-      opacity: 1;
-      transition: opacity 220ms ease;
-    }
-    body.is-leaving { opacity: 0; }
-    main {
-      width: min(100%, 420px);
-      margin: auto 0;
-      text-align: left;
-    }
-    h1 {
-      margin: 0 0 18px;
-      font-size: clamp(34px, 9vw, 48px);
-      line-height: .94;
-      letter-spacing: -.06em;
-      font-weight: 650;
-      text-transform: lowercase;
-    }
-    blockquote {
-      margin: 0;
-      max-width: 320px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-      font-weight: 400;
-      text-transform: lowercase;
-    }
-    cite {
-      display: block;
-      margin-top: 8px;
-      font-style: normal;
-      font-size: 11px;
-      letter-spacing: .02em;
-    }
-    .hint {
-      margin: 0 auto;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.4;
-      text-align: center;
-      text-transform: lowercase;
-    }
+    :root{--background:#f7f6f2;--text:#111;--muted:#9c9a94;--line:rgba(17,17,17,.13);--field:rgba(255,255,255,.55);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--background)}
+    html[data-theme="dark"]{--background:#090909;--text:#f4f4f0;--muted:#777773;--line:rgba(255,255,255,.16);--field:rgba(255,255,255,.055);color-scheme:dark}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--background);color:var(--text)}
+    body{min-height:100svh;padding:calc(env(safe-area-inset-top) + 28px) 30px calc(env(safe-area-inset-bottom) + 26px);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;opacity:1;transition:opacity 260ms ease}
+    body.is-leaving{opacity:0}main{width:min(100%,420px);margin:auto 0;transform:translateY(-3.5svh);text-align:left}
+    .title{display:flex;flex-wrap:wrap;gap:0;margin:0 0 19px;font-size:clamp(34px,9vw,48px);line-height:.94;letter-spacing:-.06em;font-weight:650;text-transform:lowercase;overflow:visible}
+    .title span{display:inline-block;opacity:0;filter:blur(9px);transform:translateY(24px) rotate(1.2deg);animation:letter-in .78s cubic-bezier(.18,.85,.25,1) forwards;animation-delay:calc(var(--i) * 42ms + 90ms);will-change:transform,opacity,filter}.title .space{width:.24em}
+    @keyframes letter-in{0%{opacity:0;filter:blur(9px);transform:translateY(24px) rotate(1.2deg)}65%{opacity:1;filter:blur(0);transform:translateY(-2px) rotate(0)}100%{opacity:1;filter:blur(0);transform:translateY(0) rotate(0)}}
+    .quote{min-height:48px;margin:0 0 34px;max-width:330px;color:var(--muted);font-size:14px;line-height:1.5;font-weight:400;text-transform:lowercase;opacity:0;transform:translateY(8px);animation:quiet-in .7s ease 820ms forwards}
+    @keyframes quiet-in{to{opacity:1;transform:none}}
+    .login{display:grid;gap:12px;width:min(100%,340px);opacity:0;transform:translateY(10px);animation:quiet-in .7s ease 980ms forwards}
+    .login input{width:100%;min-height:52px;border:1px solid var(--line);border-radius:18px;outline:none;padding:0 16px;background:var(--field);color:var(--text);font:inherit;font-size:15px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+    .login input::placeholder{color:var(--muted);text-transform:lowercase}.login input:focus{border-color:var(--text)}
+    .enter{min-height:52px;border:0;border-radius:18px;background:var(--text);color:var(--background);font:inherit;font-size:14px;font-weight:600;text-transform:lowercase}
+    .test-note{margin:2px 2px 0;color:var(--muted);font-size:10px;line-height:1.4;text-transform:lowercase}
+    .hint{margin:0 auto;color:var(--muted);font-size:10px;line-height:1.4;text-align:center;text-transform:lowercase;opacity:0;animation:quiet-in .7s ease 1.12s forwards}
+    @media(max-height:680px){main{transform:translateY(-1svh)}.quote{margin-bottom:22px}.login input,.enter{min-height:47px}}
+    @media(prefers-reduced-motion:reduce){.title span,.quote,.login,.hint{animation-duration:.01ms!important;animation-delay:0ms!important}}
   </style>
 </head>
-<body tabindex="0" aria-label="нажмите, чтобы войти">
+<body>
   <main>
-    <h1>welcome to today</h1>
-    <blockquote>
-      путь в тысячу ли начинается под ногами.
-      <cite>лао-цзы</cite>
-    </blockquote>
+    <h1 class="title" id="animated-title" aria-label="welcome to today"></h1>
+    <p class="quote" id="quote"></p>
+    <form class="login" id="login-form" novalidate>
+      <input id="name" name="name" type="text" autocomplete="username" placeholder="name" aria-label="name">
+      <input id="password" name="password" type="password" autocomplete="current-password" placeholder="password" aria-label="password">
+      <button class="enter" type="submit">enter</button>
+      <p class="test-note">test mode: поля пока могут оставаться пустыми.</p>
+    </form>
   </main>
-  <p class="hint">нажмите в любом месте, чтобы войти.</p>
+  <p class="hint">вход пока локальный. аккаунты появятся на следующем этапе.</p>
   <script>
-    (() => {
-      const theme = localStorage.getItem('today.theme.v1') || 'light';
-      document.documentElement.dataset.theme = theme;
-      document.querySelector('#theme-color').content = theme === 'dark' ? '#090909' : '#f7f6f2';
-
-      let entered = false;
-      const enter = () => {
-        if (entered) return;
-        entered = true;
-        localStorage.setItem('today.welcome.v1', 'seen');
-        document.body.classList.add('is-leaving');
-        setTimeout(() => location.href = './app.html', 180);
-      };
-
-      document.body.addEventListener('click', enter, { once: true });
-      document.body.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') enter();
-      });
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
-      }
+    (()=>{
+      const theme=localStorage.getItem('today.theme.v1')||'light';
+      document.documentElement.dataset.theme=theme;
+      document.querySelector('#theme-color').content=theme==='dark'?'#090909':'#f7f6f2';
+      const title='welcome to today',target=document.querySelector('#animated-title');
+      [...title].forEach((character,index)=>{const span=document.createElement('span');span.style.setProperty('--i',index);if(character===' '){span.className='space';span.innerHTML='&nbsp;'}else span.textContent=character;target.appendChild(span)});
+      const quotes=[
+        'старый пруд. прыжок лягушки. вода снова молчит.',
+        'на голой ветке ворон. осенний вечер становится тише.',
+        'летние травы. всё, что осталось от больших замыслов.',
+        'тишина. голос цикад медленно входит в камень.',
+        'первая зимняя морось. даже обезьяне хочется маленький плащ.',
+        'дорога пуста. осенний вечер идёт по ней один.',
+        'весенний дождь. под одной крышей встречаются зонт и плащ.',
+        'луна так ясна, что песок кажется дорогой домой.',
+        'утренний туман. безымянный холм ненадолго становится островом.',
+        'снег на снегу. декабрьская ночь не требует объяснений.',
+        'ветер с поля. один лист знает, куда ему падать.',
+        'холодный дождь. каждое слово остаётся внутри.',
+        'после грозы сосны снова стоят, будто ничего не случилось.',
+        'сумерки. колокол уже смолк, а звук всё ещё идёт.',
+        'первая бабочка. день на мгновение забывает спешить.'
+      ];
+      document.querySelector('#quote').textContent=quotes[Math.floor(Math.random()*quotes.length)];
+      let entered=false;
+      const enter=event=>{event?.preventDefault();if(entered)return;entered=true;document.body.classList.add('is-leaving');setTimeout(()=>location.href='./shell.html',230)};
+      document.querySelector('#login-form').addEventListener('submit',enter);
+      if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{});
     })();
   </script>
 </body>
