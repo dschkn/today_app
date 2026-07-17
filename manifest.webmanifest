@@ -3,7 +3,7 @@
   "name": "today",
   "short_name": "today",
   "description": "минималистичный личный список задач",
-  "start_url": "./start.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",

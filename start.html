@@ -7,6 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="today">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
   <title>today</title>
   <style>
     :root {
@@ -105,26 +108,26 @@
 
   <script>
     (() => {
-      const welcomeKey = 'today.welcome.v2';
       const theme = localStorage.getItem('today.theme.v1') || 'light';
       document.documentElement.dataset.theme = theme;
       document.querySelector('#theme-color').content = theme === 'dark' ? '#090909' : '#f7f6f2';
 
-      if (localStorage.getItem(welcomeKey) === 'seen') {
-        location.replace('./index.html');
-        return;
-      }
-
+      let entered = false;
       const enter = () => {
-        localStorage.setItem(welcomeKey, 'seen');
+        if (entered) return;
+        entered = true;
         document.body.classList.add('is-leaving');
-        setTimeout(() => location.replace('./index.html'), 180);
+        setTimeout(() => location.href = './app.html', 180);
       };
 
       document.body.addEventListener('click', enter, { once: true });
       document.body.addEventListener('keydown', event => {
         if (event.key === 'Enter' || event.key === ' ') enter();
       });
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
+      }
     })();
   </script>
 </body>
