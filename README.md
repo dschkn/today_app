@@ -1,31 +1,39 @@
 # today
 
-Минималистичный PWA-таск-трекер для iPhone и браузера.
+A minimalist progressive web app for planning daily tasks on iPhone and in the browser.
 
-## Готовый функционал
+## Features
 
-- стартовый экран `welcome to today`;
-- два раздела: задачи на сегодня и все задачи;
-- создание, редактирование, выполнение и удаление задач;
-- дата, время и приоритет;
-- фильтры активных и завершённых задач;
-- светлая и тёмная темы;
-- локальное хранение данных в `localStorage`;
-- установка на домашний экран iPhone;
-- базовый офлайн-режим через service worker.
+- a dedicated `welcome to today` entry screen;
+- two views: today's tasks and all tasks;
+- task creation, editing, completion, and deletion;
+- date, time, and priority fields;
+- filters for active and completed tasks;
+- light and dark themes;
+- local persistence with `localStorage`;
+- installation on the iPhone Home Screen;
+- basic offline support through a service worker.
 
-Интерфейс намеренно использует строчные буквы и системный стек шрифтов Apple.
+The interface intentionally uses a restrained visual system, Apple system fonts, and mostly lowercase typography.
 
-## Локальный запуск
+## Run locally
 
 ```bash
 python3 -m http.server 8080
 ```
 
-После этого открыть `http://localhost:8080`.
+Then open `http://localhost:8080` in a browser.
 
-## Следующий этап
+## Current architecture
 
-Текущий слой хранения можно заменить HTTP-клиентом и подключить backend с базой данных, не меняя основную структуру интерфейса.
+The application is currently frontend-only. Tasks are stored locally in the browser, which keeps the prototype simple and makes it suitable for the next development stage: replacing the local storage layer with an HTTP client connected to a backend and database.
+
+## Repository structure
+
+- `start.html` — welcome screen and PWA entry point;
+- `index.html` — complete task-tracker interface and client-side logic;
+- `manifest.webmanifest` — PWA metadata;
+- `sw.js` — offline cache;
+- `icon.svg` — application icon.
 
 © 2026 Dmitrii Shchukin
