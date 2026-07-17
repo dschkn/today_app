@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f5" id="theme-color">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" id="apple-status-bar">
+  <meta name="apple-mobile-web-app-title" content="today">
+  <meta name="description" content="минималистичный личный список задач">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon.svg">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>today</title>
+</head>
+<body>
+  <div class="welcome" id="welcome" aria-hidden="true" tabindex="0">
+    <div class="welcome__line welcome__line--top"></div>
+    <div class="welcome__content">
+      <h1>welcome to today</h1>
+      <p>не нужно сделать всё.<br>достаточно начать с одного.</p>
+    </div>
+    <p class="welcome__hint">нажмите в любом месте, чтобы войти.</p>
+    <div class="welcome__line welcome__line--bottom"></div>
+  </div>
+
+  <div class="app" id="app" aria-hidden="true">
+    <header class="topbar">
+      <button class="round-button theme-button" id="theme-toggle" type="button" aria-label="сменить тему">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"></path></svg>
+      </button>
+      <button class="round-button add-button" id="add-task" type="button" aria-label="добавить задачу">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+    </header>
+
+    <main class="main">
+      <section class="screen is-active" id="today-screen" data-screen="today" aria-labelledby="today-title">
+        <div class="hero">
+          <p class="eyebrow" id="today-date"></p>
+          <h2 id="today-title"><span id="greeting">доброе утро.</span><br><span class="muted">задачи на сегодня.</span></h2>
+          <p class="summary" id="today-summary"></p>
+        </div>
+        <div class="task-list" id="today-list"></div>
+      </section>
+
+      <section class="screen" id="all-screen" data-screen="all" aria-labelledby="all-title">
+        <div class="hero hero--compact">
+          <p class="eyebrow">всё в одном месте</p>
+          <h2 id="all-title">все задачи.</h2>
+        </div>
+        <div class="filters" role="group" aria-label="фильтр задач">
+          <button type="button" class="filter is-active" data-filter="all">все</button>
+          <button type="button" class="filter" data-filter="active">активные</button>
+          <button type="button" class="filter" data-filter="done">готово</button>
+        </div>
+        <div class="task-groups" id="all-list"></div>
+      </section>
+    </main>
+
+    <nav class="tabbar" aria-label="основная навигация">
+      <button type="button" class="tab is-active" data-target="today" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l3 2"></path></svg>
+        <span>сегодня</span>
+      </button>
+      <button type="button" class="tab" data-target="all">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"></path><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg>
+        <span>все задачи</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="modal-layer" id="modal-layer" aria-hidden="true">
+    <button class="modal-backdrop" id="modal-backdrop" type="button" aria-label="закрыть окно"></button>
+    <section class="task-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <header class="modal-header">
+        <button type="button" class="text-button" id="cancel-task">отмена</button>
+        <h3 id="modal-title">новая задача</h3>
+        <button type="submit" form="task-form" class="text-button text-button--strong">готово</button>
+      </header>
+
+      <form id="task-form" novalidate>
+        <label class="field field--text">
+          <span>задача</span>
+          <textarea id="task-text" name="text" rows="3" maxlength="180" placeholder="что нужно сделать?" required></textarea>
+        </label>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>дата</span>
+            <input id="task-date" name="date" type="date" required>
+          </label>
+          <label class="field">
+            <span>время</span>
+            <input id="task-time" name="time" type="time">
+          </label>
+        </div>
+
+        <fieldset class="field priority-field">
+          <legend>приоритет</legend>
+          <div class="priority-picker">
+            <label><input type="radio" name="priority" value="low"><span><i></i>низкий</span></label>
+            <label><input type="radio" name="priority" value="medium" checked><span><i></i>средний</span></label>
+            <label><input type="radio" name="priority" value="high"><span><i></i>высокий</span></label>
+          </div>
+        </fieldset>
+
+        <p class="form-error" id="form-error" role="alert"></p>
+        <button class="delete-button" id="delete-task" type="button" hidden>удалить задачу</button>
+      </form>
+    </section>
+  </div>
+
+  <template id="task-template">
+    <article class="task-card">
+      <button class="task-check" type="button" aria-label="отметить выполненной"><span></span></button>
+      <button class="task-main" type="button">
+        <span class="task-time"></span>
+        <span class="task-text"></span>
+        <span class="task-meta"><i class="priority-dot"></i><span class="task-priority"></span></span>
+      </button>
+      <button class="task-more" type="button" aria-label="изменить задачу">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+    </article>
+  </template>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
