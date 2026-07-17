@@ -20,24 +20,19 @@
       color: var(--text);
       background: var(--background);
     }
-
     html[data-theme="dark"] {
       --background: #090909;
       --text: #f4f4f0;
       --muted: #777773;
       color-scheme: dark;
     }
-
     * { box-sizing: border-box; }
-
-    html,
-    body {
+    html, body {
       margin: 0;
       min-height: 100%;
       background: var(--background);
       color: var(--text);
     }
-
     body {
       min-height: 100svh;
       padding: calc(env(safe-area-inset-top) + 28px) 30px calc(env(safe-area-inset-bottom) + 28px);
@@ -49,15 +44,12 @@
       opacity: 1;
       transition: opacity 220ms ease;
     }
-
     body.is-leaving { opacity: 0; }
-
     main {
       width: min(100%, 420px);
       margin: auto 0;
       text-align: left;
     }
-
     h1 {
       margin: 0 0 18px;
       font-size: clamp(34px, 9vw, 48px);
@@ -66,7 +58,6 @@
       font-weight: 650;
       text-transform: lowercase;
     }
-
     blockquote {
       margin: 0;
       max-width: 320px;
@@ -76,7 +67,6 @@
       font-weight: 400;
       text-transform: lowercase;
     }
-
     cite {
       display: block;
       margin-top: 8px;
@@ -84,7 +74,6 @@
       font-size: 11px;
       letter-spacing: .02em;
     }
-
     .hint {
       margin: 0 auto;
       color: var(--muted);
@@ -103,9 +92,7 @@
       <cite>лао-цзы</cite>
     </blockquote>
   </main>
-
   <p class="hint">нажмите в любом месте, чтобы войти.</p>
-
   <script>
     (() => {
       const theme = localStorage.getItem('today.theme.v1') || 'light';
@@ -116,6 +103,7 @@
       const enter = () => {
         if (entered) return;
         entered = true;
+        localStorage.setItem('today.welcome.v1', 'seen');
         document.body.classList.add('is-leaving');
         setTimeout(() => location.href = './app.html', 180);
       };
