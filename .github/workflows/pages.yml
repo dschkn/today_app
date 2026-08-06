@@ -1,4 +1,4 @@
-name: deploy pages
+name: ci and deploy today
 
 on:
   push:
@@ -7,28 +7,154 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: today-production
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  validate:
+    name: validate static app
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      - name: setup pages
-        uses: actions/configure-pages@v5
-      - name: upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - name: deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+
+      - name: verify required files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            index.html
+            app.html
+            shell.html
+            start.html
+            sw.js
+            manifest.webmanifest
+            icon.svg
+            icon-180.png
+            icon-192.png
+            icon-512.png
+          )
+
+          for file in "${required_files[@]}"; do
+            test -f "$file" || {
+              echo "missing required file: $file" >&2
+              exit 1
+            }
+          done
+
+      - name: validate manifest and source files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 -m json.tool manifest.webmanifest >/dev/null
+
+          if grep -RInE '^(<<<<<<<|=======|>>>>>>>)' \
+            --include='*.html' \
+            --include='*.js' \
+            --include='*.json' \
+            .; then
+            echo "unresolved merge markers found" >&2
+            exit 1
+          fi
+
+      - name: reject private material
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          forbidden="$({
+            git ls-files | grep -E '(^|/)(\.env($|\.)|id_rsa($|\.)|id_ed25519($|\.)|.*\.pem$|.*\.key$)' || true
+          })"
+
+          if [ -n "$forbidden" ]; then
+            echo "private material must not be committed:" >&2
+            printf '%s\n' "$forbidden" >&2
+            exit 1
+          fi
+
+  deploy:
+    name: deploy production
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://today.boatbehind.online
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: prepare release
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p release
+          cp \
+            index.html \
+            app.html \
+            shell.html \
+            start.html \
+            sw.js \
+            manifest.webmanifest \
+            icon.svg \
+            icon-180.png \
+            icon-192.png \
+            icon-512.png \
+            release/
+
+          test -f release/index.html
+
+      - name: configure restricted ssh key
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.TODAY_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.TODAY_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/today_app"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/today_app" "$HOME/.ssh/known_hosts"
+
+      - name: deploy immutable release
+        shell: bash
+        env:
+          SSH_HOST: ${{ secrets.TODAY_SSH_HOST }}
+        run: |
+          set -euo pipefail
+
+          tar -C release -czf - . | \
+            ssh \
+              -i "$HOME/.ssh/today_app" \
+              -o IdentitiesOnly=yes \
+              -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes \
+              -o ConnectTimeout=20 \
+              "dschkn@${SSH_HOST}" \
+              "deploy ${GITHUB_SHA}"
+
+      - name: verify production
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --location \
+            --retry 8 \
+            --retry-delay 5 \
+            --retry-connrefused \
+            --max-time 20 \
+            "https://today.boatbehind.online/?deploy=${GITHUB_SHA}" \
+            >/dev/null
+
+          echo "deployed ${GITHUB_SHA} to https://today.boatbehind.online"
