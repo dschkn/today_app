@@ -1,4 +1,4 @@
-const CACHE = 'today-pwa-v4';
+const CACHE = 'today-pwa-v5';
 const FILES = [
   './',
   './index.html',
@@ -42,9 +42,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached =>
       cached || fetch(event.request).then(response => {
-        if (response.ok) {
-          caches.open(CACHE).then(cache => cache.put(event.request, response.clone()));
-        }
+        if (response.ok) caches.open(CACHE).then(cache => cache.put(event.request, response.clone()));
         return response;
       })
     )
