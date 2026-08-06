@@ -8,17 +8,17 @@
   if(!client?.configured||!session?.userId)return;
 
   const tasksKey=`today.tasks.v2.${session.userId}`;
-  const originalSetItem=localStorage.setItem.bind(localStorage);
-  const originalRemoveItem=localStorage.removeItem.bind(localStorage);
+  const originalSetItem=Storage.prototype.setItem;
+  const originalRemoveItem=Storage.prototype.removeItem;
   let remoteSnapshot=readTasks();
   let desiredSnapshot=null;
   let syncing=false;
   let retryTimer=null;
   let loggingOut=false;
 
-  localStorage.setItem=function(key,value){
-    originalSetItem(key,value);
-    if(key===tasksKey){
+  Storage.prototype.setItem=function(key,value){
+    originalSetItem.call(this,key,value);
+    if(this===localStorage&&key===tasksKey){
       try{
         const parsed=JSON.parse(value);
         if(Array.isArray(parsed))scheduleSync(parsed);
@@ -39,7 +39,7 @@
     if(!confirm(`выйти из аккаунта ${session.name}?`))return;
     loggingOut=true;
     try{await client.signOut()}catch(error){console.error(error)}
-    originalRemoveItem('today.session.v1');
+    originalRemoveItem.call(localStorage,'today.session.v1');
     window.top.location.replace('./index.html');
   }
 
