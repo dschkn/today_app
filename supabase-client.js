@@ -104,23 +104,33 @@
     return String(value||'').normalize('NFKC').trim().toLocaleLowerCase();
   }
 
-  async function usernameEmail(name){
-    const normalized=normalizeName(name);
-    const bytes=new TextEncoder().encode(normalized);
+  async function sha256Hex(value){
+    const bytes=new TextEncoder().encode(value);
     const digest=await crypto.subtle.digest('SHA-256',bytes);
-    const hash=[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+    return[...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function usernameEmail(name){
+    const hash=await sha256Hex(normalizeName(name));
     return`${hash}@users.today.boatbehind.online`;
+  }
+
+  async function backendPassword(name,password){
+    return sha256Hex(`today-v1:${normalizeName(name)}:${password}`);
   }
 
   async function signUp(name,password){
     const username=String(name||'').trim();
     const usernameKey=normalizeName(username);
-    const email=await usernameEmail(username);
+    const [email,authPassword]=await Promise.all([
+      usernameEmail(username),
+      backendPassword(username,password)
+    ]);
     let payload=await request('/auth/v1/signup',{
       method:'POST',
       body:{
         email,
-        password,
+        password:authPassword,
         data:{username,username_key:usernameKey}
       }
     });
@@ -128,7 +138,7 @@
     if(!session){
       payload=await request('/auth/v1/token?grant_type=password',{
         method:'POST',
-        body:{email,password}
+        body:{email,password:authPassword}
       });
       session=normalizeSession(payload);
     }
@@ -138,10 +148,13 @@
   }
 
   async function signIn(name,password){
-    const email=await usernameEmail(name);
+    const [email,authPassword]=await Promise.all([
+      usernameEmail(name),
+      backendPassword(name,password)
+    ]);
     const payload=await request('/auth/v1/token?grant_type=password',{
       method:'POST',
-      body:{email,password}
+      body:{email,password:authPassword}
     });
     const session=normalizeSession(payload);
     if(!session)throw new Error('sign in failed.');
