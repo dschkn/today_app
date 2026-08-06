@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: verify required files
         shell: bash
@@ -83,11 +83,10 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://today.boatbehind.online
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: prepare release
         shell: bash
