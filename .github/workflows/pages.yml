@@ -37,6 +37,11 @@ jobs:
             icon-180.png
             icon-192.png
             icon-512.png
+            runtime-config.js
+            supabase-client.js
+            auth-supabase.js
+            shell-supabase.js
+            app-supabase.js
           )
 
           for file in "${required_files[@]}"; do
@@ -52,6 +57,13 @@ jobs:
           set -euo pipefail
 
           python3 -m json.tool manifest.webmanifest >/dev/null
+
+          node --check runtime-config.js
+          node --check supabase-client.js
+          node --check auth-supabase.js
+          node --check shell-supabase.js
+          node --check app-supabase.js
+          node --check sw.js
 
           if grep -RInE '^(<<<<<<<|=======|>>>>>>>)' \
             --include='*.html' \
@@ -90,8 +102,14 @@ jobs:
 
       - name: prepare release
         shell: bash
+        env:
+          SUPABASE_URL: ${{ secrets.TODAY_SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.TODAY_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           set -euo pipefail
+
+          test -n "$SUPABASE_URL"
+          test -n "$SUPABASE_PUBLISHABLE_KEY"
 
           mkdir -p release
           cp \
@@ -105,8 +123,73 @@ jobs:
             icon-180.png \
             icon-192.png \
             icon-512.png \
+            runtime-config.js \
+            supabase-client.js \
+            auth-supabase.js \
+            shell-supabase.js \
+            app-supabase.js \
             release/
 
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          release = Path('release')
+          config = {
+              'supabaseUrl': os.environ['SUPABASE_URL'],
+              'supabasePublishableKey': os.environ['SUPABASE_PUBLISHABLE_KEY'],
+          }
+          (release / 'runtime-config.js').write_text(
+              'window.TODAY_CONFIG=Object.freeze(' + json.dumps(config, separators=(',', ':')) + ');\n',
+              encoding='utf-8',
+          )
+
+          index_path = release / 'index.html'
+          index = index_path.read_text(encoding='utf-8')
+          index_marker = '  <script>\n    (()=>{'
+          index_injection = (
+              '  <script src="./runtime-config.js"></script>\n'
+              '  <script src="./supabase-client.js"></script>\n'
+              '  <script src="./auth-supabase.js"></script>\n'
+              '  <script>\n    (()=>{'
+          )
+          if index_marker not in index:
+              raise SystemExit('index script marker not found')
+          index_path.write_text(index.replace(index_marker, index_injection, 1), encoding='utf-8')
+
+          app_path = release / 'app.html'
+          app = app_path.read_text(encoding='utf-8')
+          app_marker = '<script>\n(()=>{'
+          app_injection = (
+              '<script src="./runtime-config.js"></script>\n'
+              '<script src="./supabase-client.js"></script>\n'
+              '<script src="./app-supabase.js"></script>\n'
+              '<script>\n(()=>{'
+          )
+          if app_marker not in app:
+              raise SystemExit('app script marker not found')
+          app_path.write_text(app.replace(app_marker, app_injection, 1), encoding='utf-8')
+
+          shell_path = release / 'shell.html'
+          shell = shell_path.read_text(encoding='utf-8')
+          replacement = (
+              '  <script src="./runtime-config.js"></script>\n'
+              '  <script src="./supabase-client.js"></script>\n'
+              '  <script src="./shell-supabase.js"></script>\n'
+              '</body>'
+          )
+          shell, count = re.subn(r'  <script>\s*\(\(\)=>\{.*?</script>\s*</body>', replacement, shell, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('shell script block not found')
+          shell_path.write_text(shell, encoding='utf-8')
+          PY
+
+          grep -q 'auth-supabase.js' release/index.html
+          grep -q 'app-supabase.js' release/app.html
+          grep -q 'shell-supabase.js' release/shell.html
+          grep -q 'api.today.boatbehind.online' release/runtime-config.js
           test -f release/index.html
 
       - name: configure restricted ssh key
@@ -141,6 +224,8 @@ jobs:
 
       - name: verify production
         shell: bash
+        env:
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.TODAY_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           set -euo pipefail
 
@@ -156,4 +241,25 @@ jobs:
             "https://today.boatbehind.online/?deploy=${GITHUB_SHA}" \
             >/dev/null
 
-          echo "deployed ${GITHUB_SHA} to https://today.boatbehind.online"
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 8 \
+            --retry-delay 5 \
+            --max-time 20 \
+            "https://today.boatbehind.online/runtime-config.js?deploy=${GITHUB_SHA}" \
+            | grep -q 'https://api.today.boatbehind.online'
+
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 5 \
+            --retry-delay 3 \
+            --max-time 20 \
+            -H "apikey: ${SUPABASE_PUBLISHABLE_KEY}" \
+            "https://api.today.boatbehind.online/auth/v1/settings" \
+            >/dev/null
+
+          echo "deployed ${GITHUB_SHA} with supabase connectivity"
