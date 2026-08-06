@@ -46,7 +46,7 @@ html[data-theme="dark"]{--bg:#090909;--card:#121212;--milk:#1a1a18;--text:#f4f4f
   const LEGACY_OWNER_KEY='today.tasks.v1.owner';
   const THEME_KEY='today.theme.v1';
   const session=readSession();
-  if(!session){location.replace('./index.html');return}
+  if(!session){window.top.location.replace('./index.html');return}
 
   const TASKS_KEY=`today.tasks.v2.${session.userId}`;
   const completionPhrases=[
@@ -121,7 +121,7 @@ html[data-theme="dark"]{--bg:#090909;--card:#121212;--milk:#1a1a18;--text:#f4f4f
   function logout(){
     if(!confirm(`выйти из аккаунта ${session.name}?`))return;
     localStorage.removeItem(SESSION_KEY);
-    location.replace('./index.html');
+    window.top.location.replace('./index.html');
   }
 
   function theme(value){document.documentElement.dataset.theme=value;$('#themeColor').content=value==='dark'?'#090909':'#f7f6f2'}
