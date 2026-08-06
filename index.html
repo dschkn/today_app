@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -12,66 +12,165 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
   <title>today</title>
   <style>
-    :root{--background:#f7f6f2;--text:#111;--muted:#9c9a94;--line:rgba(17,17,17,.13);--field:rgba(255,255,255,.55);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--background)}
-    html[data-theme="dark"]{--background:#090909;--text:#f4f4f0;--muted:#777773;--line:rgba(255,255,255,.16);--field:rgba(255,255,255,.055);color-scheme:dark}
+    :root{--background:#f7f6f2;--text:#050505;--muted:#a7a7a3;--soft:#e9e9e7;--line:rgba(5,5,5,.12);--danger:#9a443e;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--background)}
+    html[data-theme="dark"]{--background:#090909;--text:#f5f5f0;--muted:#777773;--soft:#20201f;--line:rgba(255,255,255,.16);--danger:#dc817a;color-scheme:dark}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--background);color:var(--text)}
-    body{min-height:100svh;padding:calc(env(safe-area-inset-top) + 28px) 30px calc(env(safe-area-inset-bottom) + 26px);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;opacity:1;transition:opacity 260ms ease}
-    body.is-leaving{opacity:0}main{width:min(100%,420px);margin:auto 0;transform:translateY(-3.5svh);text-align:left}
-    .title{display:flex;flex-wrap:wrap;gap:0;margin:0 0 19px;font-size:clamp(34px,9vw,48px);line-height:.94;letter-spacing:-.06em;font-weight:650;text-transform:lowercase;overflow:visible}
-    .title span{display:inline-block;opacity:0;filter:blur(9px);transform:translateY(24px) rotate(1.2deg);animation:letter-in .78s cubic-bezier(.18,.85,.25,1) forwards;animation-delay:calc(var(--i) * 42ms + 90ms);will-change:transform,opacity,filter}.title .space{width:.24em}
-    @keyframes letter-in{0%{opacity:0;filter:blur(9px);transform:translateY(24px) rotate(1.2deg)}65%{opacity:1;filter:blur(0);transform:translateY(-2px) rotate(0)}100%{opacity:1;filter:blur(0);transform:translateY(0) rotate(0)}}
-    .quote{min-height:48px;margin:0 0 34px;max-width:330px;color:var(--muted);font-size:14px;line-height:1.5;font-weight:400;text-transform:lowercase;opacity:0;transform:translateY(8px);animation:quiet-in .7s ease 820ms forwards}
-    @keyframes quiet-in{to{opacity:1;transform:none}}
-    .login{display:grid;gap:12px;width:min(100%,340px);opacity:0;transform:translateY(10px);animation:quiet-in .7s ease 980ms forwards}
-    .login input{width:100%;min-height:52px;border:1px solid var(--line);border-radius:18px;outline:none;padding:0 16px;background:var(--field);color:var(--text);font:inherit;font-size:15px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
-    .login input::placeholder{color:var(--muted);text-transform:lowercase}.login input:focus{border-color:var(--text)}
-    .enter{min-height:52px;border:0;border-radius:18px;background:var(--text);color:var(--background);font:inherit;font-size:14px;font-weight:600;text-transform:lowercase}
-    .test-note{margin:2px 2px 0;color:var(--muted);font-size:10px;line-height:1.4;text-transform:lowercase}
-    .hint{margin:0 auto;color:var(--muted);font-size:10px;line-height:1.4;text-align:center;text-transform:lowercase;opacity:0;animation:quiet-in .7s ease 1.12s forwards}
-    @media(max-height:680px){main{transform:translateY(-1svh)}.quote{margin-bottom:22px}.login input,.enter{min-height:47px}}
-    @media(prefers-reduced-motion:reduce){.title span,.quote,.login,.hint{animation-duration:.01ms!important;animation-delay:0ms!important}}
+    body{min-height:100svh;padding:calc(env(safe-area-inset-top) + 25px) 28px calc(env(safe-area-inset-bottom) + 28px);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow:hidden}
+    button,input{font:inherit;color:inherit}button{border:0}.chrome{display:flex;align-items:flex-start;justify-content:space-between;min-height:78px;pointer-events:none}.number,.asterisk{font-size:clamp(52px,16vw,76px);line-height:.8;font-weight:750;letter-spacing:-.08em;color:#d6d6d1}.asterisk{font-size:clamp(48px,14vw,68px);color:#33332f}
+    .stage{position:relative;flex:1;width:min(100%,430px);margin:0 auto}.panel{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .28s ease,transform .36s cubic-bezier(.2,.8,.2,1),visibility .28s}.panel.active{opacity:1;visibility:visible;transform:none}
+    .landing-copy{margin-top:clamp(24vh,31vh,35vh);padding:0 12px}.landing-copy h1{margin:0;font-size:clamp(39px,11vw,58px);line-height:.93;letter-spacing:-.065em;font-weight:690;text-transform:lowercase}.landing-copy .soft{display:block;color:#91918f}.landing-copy .strong{display:block;color:var(--text)}
+    .actions{margin-top:auto;display:grid;gap:13px;padding:0 10px 3px}.primary,.secondary{width:100%;min-height:58px;border-radius:999px;padding:0 20px;font-size:clamp(19px,5.3vw,25px);font-weight:670;letter-spacing:-.035em;text-transform:lowercase;cursor:pointer}.primary{background:var(--text);color:var(--background)}.secondary{background:var(--soft);color:var(--text)}
+    .auth-panel{justify-content:center;padding:18px 10px 8px}.auth-card{width:100%;transform:translateY(-3svh)}.auth-kicker{margin:0 0 9px;color:var(--muted);font-size:13px;text-transform:lowercase}.auth-title{margin:0 0 34px;font-size:clamp(42px,12vw,59px);line-height:.92;letter-spacing:-.065em;font-weight:690;text-transform:lowercase}.auth-form{display:grid;gap:13px}.auth-form input{width:100%;min-height:58px;border:1px solid var(--line);border-radius:19px;outline:none;padding:0 18px;background:transparent;font-size:17px}.auth-form input::placeholder{color:var(--muted);text-transform:lowercase}.auth-form input:focus{border-color:var(--text)}.auth-submit{margin-top:7px}.back{min-height:44px;background:transparent;color:var(--muted);font-size:13px;text-transform:lowercase;cursor:pointer}.message{min-height:18px;margin:4px 2px 0;color:var(--danger);font-size:12px;line-height:1.45;text-transform:lowercase}.message.success{color:var(--muted)}
+    .privacy{margin:0 13px;color:var(--muted);font-size:10px;line-height:1.45;text-align:center;text-transform:lowercase}
+    body.is-leaving{opacity:0;transition:opacity .22s ease}@media(max-height:680px){.chrome{min-height:55px}.landing-copy{margin-top:16vh}.primary,.secondary,.auth-form input{min-height:50px}.auth-title{margin-bottom:22px}.auth-card{transform:none}}@media(prefers-reduced-motion:reduce){.panel,body.is-leaving{transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
-  <main>
-    <h1 class="title" id="animated-title" aria-label="welcome to today"></h1>
-    <p class="quote" id="quote"></p>
-    <form class="login" id="login-form" novalidate>
-      <input id="name" name="name" type="text" autocomplete="username" placeholder="name" aria-label="name">
-      <input id="password" name="password" type="password" autocomplete="current-password" placeholder="password" aria-label="password">
-      <button class="enter" type="submit">enter</button>
-      <p class="test-note">test mode: поля пока могут оставаться пустыми.</p>
-    </form>
+  <header class="chrome" aria-hidden="true"><span class="number">1</span><span class="asterisk">*</span></header>
+  <main class="stage">
+    <section class="panel active" id="landing" aria-labelledby="welcome-title">
+      <div class="landing-copy">
+        <h1 id="welcome-title"><span class="soft">welcome to</span><span class="strong">today</span></h1>
+      </div>
+      <div class="actions">
+        <button class="primary" id="open-login" type="button">log in</button>
+        <button class="secondary" id="open-register" type="button">register</button>
+        <p class="privacy">local prototype. passwords are stored only as salted hashes on this device.</p>
+      </div>
+    </section>
+
+    <section class="panel auth-panel" id="auth-panel" aria-labelledby="auth-title">
+      <div class="auth-card">
+        <p class="auth-kicker">welcome to today</p>
+        <h2 class="auth-title" id="auth-title">log in</h2>
+        <form class="auth-form" id="auth-form" novalidate>
+          <input id="name" name="name" type="text" autocomplete="username" placeholder="name" aria-label="name" maxlength="60">
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="password" aria-label="password" maxlength="200">
+          <button class="primary auth-submit" id="auth-submit" type="submit">log in</button>
+          <button class="back" id="back" type="button">back</button>
+          <p class="message" id="message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
   </main>
-  <p class="hint">вход пока локальный. аккаунты появятся на следующем этапе.</p>
+
   <script>
     (()=>{
+      'use strict';
+      const USERS_KEY='today.users.v1';
+      const SESSION_KEY='today.session.v1';
       const theme=localStorage.getItem('today.theme.v1')||'light';
       document.documentElement.dataset.theme=theme;
       document.querySelector('#theme-color').content=theme==='dark'?'#090909':'#f7f6f2';
-      const title='welcome to today',target=document.querySelector('#animated-title');
-      [...title].forEach((character,index)=>{const span=document.createElement('span');span.style.setProperty('--i',index);if(character===' '){span.className='space';span.innerHTML='&nbsp;'}else span.textContent=character;target.appendChild(span)});
-      const quotes=[
-        'старый пруд. прыжок лягушки. вода снова молчит.',
-        'на голой ветке ворон. осенний вечер становится тише.',
-        'летние травы. всё, что осталось от больших замыслов.',
-        'тишина. голос цикад медленно входит в камень.',
-        'первая зимняя морось. даже обезьяне хочется маленький плащ.',
-        'дорога пуста. осенний вечер идёт по ней один.',
-        'весенний дождь. под одной крышей встречаются зонт и плащ.',
-        'луна так ясна, что песок кажется дорогой домой.',
-        'утренний туман. безымянный холм ненадолго становится островом.',
-        'снег на снегу. декабрьская ночь не требует объяснений.',
-        'ветер с поля. один лист знает, куда ему падать.',
-        'холодный дождь. каждое слово остаётся внутри.',
-        'после грозы сосны снова стоят, будто ничего не случилось.',
-        'сумерки. колокол уже смолк, а звук всё ещё идёт.',
-        'первая бабочка. день на мгновение забывает спешить.'
-      ];
-      document.querySelector('#quote').textContent=quotes[Math.floor(Math.random()*quotes.length)];
-      let entered=false;
-      const enter=event=>{event?.preventDefault();if(entered)return;entered=true;document.body.classList.add('is-leaving');setTimeout(()=>location.href='./shell.html',230)};
-      document.querySelector('#login-form').addEventListener('submit',enter);
+
+      const landing=document.querySelector('#landing');
+      const authPanel=document.querySelector('#auth-panel');
+      const form=document.querySelector('#auth-form');
+      const title=document.querySelector('#auth-title');
+      const submit=document.querySelector('#auth-submit');
+      const nameInput=document.querySelector('#name');
+      const passwordInput=document.querySelector('#password');
+      const message=document.querySelector('#message');
+      let mode='login';
+      let busy=false;
+
+      document.querySelector('#open-login').addEventListener('click',()=>openAuth('login'));
+      document.querySelector('#open-register').addEventListener('click',()=>openAuth('register'));
+      document.querySelector('#back').addEventListener('click',showLanding);
+      form.addEventListener('submit',handleSubmit);
+
+      function openAuth(nextMode){
+        mode=nextMode;
+        const label=mode==='login'?'log in':'register';
+        title.textContent=label;
+        submit.textContent=label;
+        passwordInput.autocomplete=mode==='login'?'current-password':'new-password';
+        form.reset();
+        setMessage('');
+        landing.classList.remove('active');
+        authPanel.classList.add('active');
+        setTimeout(()=>nameInput.focus(),220);
+      }
+
+      function showLanding(){
+        if(busy)return;
+        authPanel.classList.remove('active');
+        landing.classList.add('active');
+        form.reset();
+        setMessage('');
+      }
+
+      async function handleSubmit(event){
+        event.preventDefault();
+        if(busy)return;
+        const name=nameInput.value.trim();
+        const password=passwordInput.value;
+        if(!name){setMessage('enter a name.');nameInput.focus();return}
+        if(!password){setMessage('enter a password.');passwordInput.focus();return}
+        busy=true;
+        submit.disabled=true;
+        setMessage(mode==='login'?'checking account...':'creating account...','success');
+        try{
+          if(mode==='register')await register(name,password);
+          else await login(name,password);
+        }catch(error){
+          setMessage(error instanceof Error?error.message:'something went wrong.');
+          busy=false;
+          submit.disabled=false;
+        }
+      }
+
+      async function register(name,password){
+        const users=loadUsers();
+        const nameKey=normalizeName(name);
+        if(users.some(user=>user.nameKey===nameKey))throw new Error('this name is already registered.');
+        const salt=randomHex(16);
+        const passwordHash=await hashPassword(password,salt);
+        const user={id:createId(),name,nameKey,salt,passwordHash,createdAt:new Date().toISOString()};
+        users.push(user);
+        localStorage.setItem(USERS_KEY,JSON.stringify(users));
+        startSession(user);
+      }
+
+      async function login(name,password){
+        const nameKey=normalizeName(name);
+        const user=loadUsers().find(item=>item.nameKey===nameKey);
+        if(!user)throw new Error('account not found.');
+        const passwordHash=await hashPassword(password,user.salt);
+        if(passwordHash!==user.passwordHash)throw new Error('wrong password.');
+        startSession(user);
+      }
+
+      function startSession(user){
+        localStorage.setItem(SESSION_KEY,JSON.stringify({userId:user.id,name:user.name,startedAt:new Date().toISOString()}));
+        setMessage('done. opening today...','success');
+        document.body.classList.add('is-leaving');
+        setTimeout(()=>location.href='./shell.html',210);
+      }
+
+      function loadUsers(){
+        try{const value=JSON.parse(localStorage.getItem(USERS_KEY));return Array.isArray(value)?value:[]}catch{return[]}
+      }
+
+      function normalizeName(value){return value.trim().toLocaleLowerCase()}
+      function createId(){return crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`}
+      function randomHex(byteLength){
+        const bytes=new Uint8Array(byteLength);
+        if(crypto.getRandomValues)crypto.getRandomValues(bytes);else for(let i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);
+        return [...bytes].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+      }
+      async function hashPassword(password,salt){
+        const value=`${salt}:${password}`;
+        if(crypto.subtle&&window.TextEncoder){
+          const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
+          return [...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+        }
+        let hash=2166136261;
+        for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,16777619)}
+        return `fallback-${(hash>>>0).toString(16)}`;
+      }
+      function setMessage(text,type='error'){message.textContent=text;message.classList.toggle('success',type==='success')}
+
       if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{});
     })();
   </script>
